@@ -69,7 +69,7 @@ public class PropertyBeanFactoryTest {
             fail("PropertyBeanBuildException must be thrown");
         } catch (PropertyBeanBuildException e) {
             assertNotNull(e);
-            assertEquals("Failed to load properties from source [fake]. Properties bean class [class org.annoconf.AnnotatedWithInvalidPath]", e.getMessage());
+            assertEquals("Failed to build instance of property bean class [class org.annoconf.AnnotatedWithInvalidPath]. Failed to load properties from path [fake]", e.getMessage());
         }
     }
 
@@ -97,7 +97,7 @@ class BeanWithoutNoArgsConstructor {
     public BeanWithoutNoArgsConstructor(String prop) {}
 }
 
-@PropertySource("/single.properties")
+@PropertySource("single.properties")
 class InvalidPropertyName {
 
     @Property("${invalid}")
@@ -105,7 +105,7 @@ class InvalidPropertyName {
 
 }
 
-@PropertySource("/single.properties")
+@PropertySource("single.properties")
 class OneStringProperty {
 
     @Property("${str.prop}")
@@ -116,7 +116,7 @@ class OneStringProperty {
     }
 }
 
-@PropertySource("/two.properties")
+@PropertySource("classpath:two.properties")
 class TwoStringProperties {
 
     @Property("${prop1}")
@@ -133,7 +133,7 @@ class TwoStringProperties {
     }
 }
 
-@PropertySource("/three.properties")
+@PropertySource("three.properties")
 class ThreeStringProperties {
 
     @Property("${str.prop}")
