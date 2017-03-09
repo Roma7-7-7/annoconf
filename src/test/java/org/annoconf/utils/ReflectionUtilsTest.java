@@ -32,6 +32,16 @@ public class ReflectionUtilsTest {
         assertNotNull(ReflectionUtils.newInstance(ClassWithultipleConstructorss.class));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void setFieldValueNullObject() {
+        ReflectionUtils.setFieldValue(null, BaseClass.class.getDeclaredFields()[0], "");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void setFieldValueNullField() {
+        ReflectionUtils.setFieldValue(new Object(), null, "");
+    }
+
     @Test
     public void setFieldValue() {
         final BaseClass instance = new BaseClass("value1");
@@ -39,6 +49,10 @@ public class ReflectionUtilsTest {
         assertTrue(instance == ReflectionUtils.setFieldValue(
                 instance, BaseClass.class.getDeclaredFields()[0], "value2"));
         assertEquals("value2", instance.getField());
+
+        assertTrue(instance == ReflectionUtils.setFieldValue(
+                instance, BaseClass.class.getDeclaredFields()[0], null));
+        assertEquals(null, instance.getField());
     }
 
     @Test(expected = NullPointerException.class)

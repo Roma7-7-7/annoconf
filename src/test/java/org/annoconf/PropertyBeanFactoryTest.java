@@ -16,22 +16,22 @@ public class PropertyBeanFactoryTest {
 
     @Test(expected = PropertyBeanBuildException.class)
     public void getBeanWithNonAnnotatedClass() {
-        PropertyBeanFactory.getBean(NonAnnotated.class);
+        PropertyBeanFactory.getBean(NonAnnotatedClass.class);
     }
 
     @Test(expected = PropertyBeanBuildException.class)
     public void getBeanEmptyAnnotatedClass() {
-        PropertyBeanFactory.getBean(EmptyAnnotated.class);
+        PropertyBeanFactory.getBean(AnnotatedWithEmptyPath.class);
     }
 
     @Test
     public void getBeanCheckNotNull() {
-        assertNotNull(PropertyBeanFactory.getBean(SingleStringPropertyBean.class));
+        assertNotNull(PropertyBeanFactory.getBean(OneStringProperty.class));
     }
 
     @Test
     public void getBeanStringProperties() {
-        final BeanWithStringArgs bean = PropertyBeanFactory.getBean(BeanWithStringArgs.class);
+        final TwoStringProperties bean = PropertyBeanFactory.getBean(TwoStringProperties.class);
         assertEquals("str-prop-value", bean.getProp1());
         assertEquals("prop-value-2", bean.getProp2());
     }
@@ -43,7 +43,7 @@ public class PropertyBeanFactoryTest {
 
     @Test
     public void getBeanSingleProperty() {
-        final SingleStringPropertyBean instance = PropertyBeanFactory.getBean(SingleStringPropertyBean.class);
+        final OneStringProperty instance = PropertyBeanFactory.getBean(OneStringProperty.class);
 
         assertNotNull(instance);
         assertEquals("str-prop-value", instance.getProp());
@@ -51,47 +51,77 @@ public class PropertyBeanFactoryTest {
 
     @Test
     public void getBeanMultipleStringProperties() {
-        final MultipleStringPropertiesBean instance = PropertyBeanFactory.getBean(MultipleStringPropertiesBean.class);
+        final ThreeStringProperties instance = PropertyBeanFactory.getBean(ThreeStringProperties.class);
 
         assertNotNull(instance);
         assertEquals("str-prop-value", instance.getProp1());
         assertEquals("prop-value-2", instance.getProp2());
         assertEquals("p3", instance.getProp3());
+        assertEquals("default-val", instance.getProp4());
+        assertEquals(null, instance.getProp5());
+        assertEquals("${prop6#null", instance.getProp6());
     }
 
     @Test
     public void getBeanWithInvalidPath() {
         try {
-            PropertyBeanFactory.getBean(InvalidPath.class);
+            PropertyBeanFactory.getBean(AnnotatedWithInvalidPath.class);
             fail("PropertyBeanBuildException must be thrown");
         } catch (PropertyBeanBuildException e) {
             assertNotNull(e);
-            assertEquals("Failed to load properties from source [fake]. Properties bean class [class org.annoconf.InvalidPath]", e.getMessage());
+            assertEquals("Failed to load properties from source [fake]. Properties bean class [class org.annoconf.AnnotatedWithInvalidPath]", e.getMessage());
+        }
+    }
+
+    @Test
+    public void getBeanWithInvalidPropertyName() {
+        try {
+            PropertyBeanFactory.getBean(InvalidPropertyName.class);
+            fail("PropertyBeanBuildException must be thrown");
+        } catch (PropertyBeanBuildException e) {
+            assertEquals("Failed to build instance of property bean class [org.annoconf.InvalidPropertyName]. Cannot set field [invalidProperty]. Property not found. Property name [invalid]", e.getMessage());
         }
     }
 
 }
 
-class NonAnnotated {
-
-}
+class NonAnnotatedClass {}
 
 @PropertySource("")
-class EmptyAnnotated {
+class AnnotatedWithEmptyPath {}
+
+@PropertySource("fake")
+class AnnotatedWithInvalidPath {}
+
+class BeanWithoutNoArgsConstructor {
+    public BeanWithoutNoArgsConstructor(String prop) {}
+}
+
+@PropertySource("/single.properties")
+class InvalidPropertyName {
+
+    @Property("${invalid}")
+    private String invalidProperty;
 
 }
 
-@PropertySource("")
-class BeanWithoutArgsEmptyPath {
+@PropertySource("/single.properties")
+class OneStringProperty {
 
+    @Property("${str.prop}")
+    private String prop;
+
+    public String getProp() {
+        return prop;
+    }
 }
 
-@PropertySource("/two-props.properties")
-class BeanWithStringArgs {
+@PropertySource("/two.properties")
+class TwoStringProperties {
 
-    @Property("prop1")
+    @Property("${prop1}")
     private String prop1;
-    @Property("prop2")
+    @Property("${prop2}")
     private String prop2;
 
     public String getProp1() {
@@ -103,35 +133,21 @@ class BeanWithStringArgs {
     }
 }
 
-class BeanWithoutNoArgsConstructor {
+@PropertySource("/three.properties")
+class ThreeStringProperties {
 
-    private String prop;
-
-    public BeanWithoutNoArgsConstructor(String prop) {
-        this.prop = prop;
-    }
-}
-
-@PropertySource("/single-property.properties")
-class SingleStringPropertyBean {
-
-    @Property("str.prop")
-    private String prop;
-
-    public String getProp() {
-        return prop;
-    }
-}
-
-@PropertySource("/multiple-string.properties")
-class MultipleStringPropertiesBean {
-
-    @Property("str.prop")
+    @Property("${str.prop}")
     private String prop1;
-    @Property("str.prop-2")
+    @Property("${str.prop-2}")
     private String prop2;
-    @Property("str.p3")
+    @Property("${str.p3}")
     private String prop3;
+    @Property("${prop4:default-val}")
+    private String prop4;
+    @Property("${prop5#null}")
+    private String prop5;
+    @Property("${prop6#null")
+    private String prop6;
 
     public String getProp1() {
         return prop1;
@@ -144,7 +160,16 @@ class MultipleStringPropertiesBean {
     public String getProp3() {
         return prop3;
     }
-}
 
-@PropertySource("fake")
-class InvalidPath {}
+    public String getProp4() {
+        return prop4;
+    }
+
+    public String getProp5() {
+        return prop5;
+    }
+
+    public String getProp6() {
+        return prop6;
+    }
+}

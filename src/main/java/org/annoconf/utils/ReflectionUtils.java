@@ -20,7 +20,7 @@ public class ReflectionUtils {
     private ReflectionUtils() {}
 
     public static <T> T newInstance(Class<T> clazz) {
-        Objects.nonNull(clazz);
+        Objects.requireNonNull(clazz);
         try {
             final Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -33,29 +33,28 @@ public class ReflectionUtils {
     }
 
     public static <A extends Annotation> A getAnnotation(Object obj, Class<A> annotation) {
-        Objects.nonNull(obj);
+        Objects.requireNonNull(obj);
 
         return obj.getClass().getDeclaredAnnotation(annotation);
     }
 
     public static <A extends Annotation> A getAnnotation(Class<?> clazz, Class<A> annotation) {
-        Objects.nonNull(clazz);
-        Objects.nonNull(annotation);
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(annotation);
 
         return clazz.getDeclaredAnnotation(annotation);
     }
 
     public static <A extends Annotation> A getAnnotation(Field field, Class<A> annotation) {
-        Objects.nonNull(field);
-        Objects.nonNull(annotation);
+        Objects.requireNonNull(field);
+        Objects.requireNonNull(annotation);
 
         return field.getDeclaredAnnotation(annotation);
     }
 
     public static <T> T setFieldValue(T obj, Field field, Object value) {
-        Objects.nonNull(obj);
-        Objects.nonNull(field);
-        Objects.nonNull(value);
+        Objects.requireNonNull(obj);
+        Objects.requireNonNull(field);
 
         try {
             field.setAccessible(true);
@@ -67,7 +66,7 @@ public class ReflectionUtils {
     }
 
     public static List<Field> getPropertyFields(Class<?> clazz) {
-        Objects.nonNull(clazz);
+        Objects.requireNonNull(clazz);
 
         return Arrays.stream(clazz.getDeclaredFields())
                 .filter(f -> isAnnotated(f, Property.class))
