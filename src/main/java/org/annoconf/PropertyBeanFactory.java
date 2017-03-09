@@ -2,6 +2,7 @@ package org.annoconf;
 
 import org.annoconf.exceptions.AnnoConfException;
 import org.annoconf.exceptions.PropertiesLoadException;
+import org.annoconf.extract.PropertyValueExtractorFactory;
 import org.annoconf.utils.ReflectionUtils;
 import org.annoconf.utils.StringUtils;
 
@@ -44,8 +45,9 @@ public class PropertyBeanFactory {
 
     private static void setPropertyValue(Object obj, Field field, Properties properties) {
         try {
+            final Class<?> fieldType = field.getType();
             final Property annotation = ReflectionUtils.getAnnotation(field, Property.class);
-            final String value = PropertyValueExtractor.INSTANCE.extract(properties, annotation);
+            final Object value = PropertyValueExtractorFactory.getExtractor(fieldType).extract(properties, annotation);
             ReflectionUtils.setFieldValue(obj, field, value);
         } catch (AnnoConfException e) {
             throw new PropertyBeanBuildException(String.format("Failed to build instance of property bean class [%s]. Cannot set field [%s]", obj.getClass().getName(), field.getName()), e);
