@@ -9,4 +9,7 @@ public class AnnoConfException extends Exception {
         super(message);
     }
 
+    public AnnoConfException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

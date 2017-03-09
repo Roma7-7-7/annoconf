@@ -1,5 +1,6 @@
-package org.annoconf;
+package org.annoconf.extract;
 
+import org.annoconf.Property;
 import org.annoconf.exceptions.AnnoConfException;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 public class PropertyValueExtractorTest {
 
     private Properties properties = new Properties();
-    private PropertyValueExtractor extractor = PropertyValueExtractor.INSTANCE;
+    private PropertyValueExtractor<String> extractor = PropertyValueExtractorFactory.getExtractor(String.class);
 
     @Before
     public void before() {
