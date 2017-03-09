@@ -1,10 +1,12 @@
 package org.annoconf;
 
+import org.annoconf.exceptions.AnnoConfException;
 import org.annoconf.utils.ReflectionUtils;
 import org.annoconf.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -14,7 +16,7 @@ import java.util.Properties;
 public class PropertyBeanFactory {
 
     public static <T> T getBean(Class<T> clazz) {
-        Objects.nonNull(clazz);
+        Objects.requireNonNull(clazz);
 
         final PropertySource annotation = ReflectionUtils.getAnnotation(clazz, PropertySource.class);
         if (annotation == null) {
@@ -28,11 +30,7 @@ public class PropertyBeanFactory {
         final Properties properties = loadProperties(annotation.value(), clazz);
 
         ReflectionUtils.getPropertyFields(clazz)
-                .forEach(f -> {
-                    final String propertyName = ReflectionUtils.getAnnotation(f, Property.class).value();
-                    final Object propertyValue = properties.get(propertyName);
-                    ReflectionUtils.setFieldValue(result, f, propertyValue);
-                });
+                .forEach(f -> setPropertyValue(result, f, properties));
 
         return result;
     }
@@ -55,6 +53,17 @@ public class PropertyBeanFactory {
         }
 
         return result;
+    }
+
+    private static void setPropertyValue(Object obj, Field field, Properties properties) {
+        try {
+            final Property annotation = ReflectionUtils.getAnnotation(field, Property.class);
+            final String value = PropertyValueExtractor.INSTANCE.extract(properties, annotation);
+            ReflectionUtils.setFieldValue(obj, field, value);
+        } catch (AnnoConfException e) {
+            throw new PropertyBeanBuildException(String.format("Failed to build instance of property bean class [%s]. Cannot set field [%s]. %s", obj.getClass().getName(), field.getName(), e.getMessage()));
+        }
+
     }
 
 }

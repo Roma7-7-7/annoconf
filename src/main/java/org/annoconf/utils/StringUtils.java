@@ -14,4 +14,14 @@ public class StringUtils {
         return str.trim().length() == 0;
     }
 
+    public static long countOf(String str, char search) {
+        if (str == null) {
+            return 0;
+        }
+
+        return str.chars()
+                .filter(c -> c == search)
+                .count();
+    }
+
 }
