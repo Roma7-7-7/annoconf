@@ -26,9 +26,9 @@ public class ReflectionUtils {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (NoSuchMethodException e) {
-            throw new PropertyBeanBuildException(String.format("Property bean class [%s] must contain constructor without arguments", clazz));
+            throw new PropertyBeanBuildException(String.format("Property bean class [%s] must contain constructor without arguments", clazz), e);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            throw new PropertyBeanBuildException(String.format("Failed to build instance of bean [%s]", clazz));
+            throw new PropertyBeanBuildException(String.format("Failed to build instance of bean [%s]", clazz), e);
         }
     }
 

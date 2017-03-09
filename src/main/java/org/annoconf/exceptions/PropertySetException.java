@@ -5,15 +5,8 @@ package org.annoconf.exceptions;
  */
 public class PropertySetException extends AnnoConfException {
 
-    private String property;
-
     public PropertySetException(String property, String message) {
-        super(message);
-        this.property = property;
+        super(String.format("%s. Property name [%s]", message, property));
     }
 
-    @Override
-    public String getMessage() {
-        return String.format("%s. Property name [%s]", super.getMessage(), this.property);
-    }
 }
