@@ -2,6 +2,14 @@ package org.annoconf;
 
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.util.Date;
+
 import static org.junit.Assert.*;
 
 /**
@@ -84,7 +92,7 @@ public class PropertyBeanFactoryTest {
     }
 
     @Test
-    public void getBeanWithDifferentPropertyTypes() {
+    public void getBeanWithDifferentPropertyTypes() throws ParseException {
         final DifferentProperties properties = PropertyBeanFactory.getBean(DifferentProperties.class);
 
         assertEquals("str-value", properties.getStr1());
@@ -120,6 +128,28 @@ public class PropertyBeanFactoryTest {
         assertTrue(properties.getBoolean4());
         assertFalse(properties.getBoolean5());
         assertNull(properties.getBoolean6());
+
+        checkDate("yyyy-MM-dd", "2017-01-01", properties.getDate1());
+        checkDate("yyyy-MM-dd HH:mm:ss", "2018-02-02 02:02:03", properties.getDate2());
+        checkDate("yyyy-MM-dd", "2019-07-03", properties.getDate3());
+        assertNull(properties.getDate4());
+
+        assertEquals(LocalDate.of(2017, Month.FEBRUARY, 17), properties.getLocalDate1());
+        assertEquals(LocalDate.of(2018, Month.FEBRUARY, 3), properties.getLocalDate2());
+        assertNull(properties.getLocalDate3());
+
+        assertEquals(LocalTime.of(2, 3, 7), properties.getLocalTime1());
+        assertEquals(LocalTime.of(1, 2, 3), properties.getLocalTime2());
+        assertEquals(LocalTime.of(2, 3, 4), properties.getLocalTime3());
+        assertNull(properties.getLocalTime4());
+
+        assertEquals(LocalDateTime.of(2017, Month.JULY, 31, 17, 7), properties.getLocalDateTime1());
+        assertEquals(LocalDateTime.of(2007, Month.FEBRUARY, 1, 1, 3, 7), properties.getLocalDateTime2());
+        assertNull(properties.getLocalDateTime3());
+    }
+
+    private void checkDate(String pattern, String expected, Date value) throws ParseException {
+        assertEquals(new SimpleDateFormat(pattern).parse(expected), value);
     }
 
 }
@@ -278,6 +308,54 @@ class DifferentProperties {
     @Property("${boolean-six#null}")
     private Boolean boolean6;
 
+    @Property("${date-one}")
+    @PropertyDateTimeFormat("yyyy-MM-dd")
+    private Date date1;
+    @Property("${date-two}")
+    @PropertyDateTimeFormat("yyyy-MM-dd HH:mm:ss")
+    private Date date2;
+    @Property("${date-three:2019/07/03}")
+    @PropertyDateTimeFormat("yyyy/MM/dd")
+    private Date date3;
+    @Property("${date-four#null}")
+    @PropertyDateTimeFormat("yyyy/MM/dd")
+    private Date date4;
+
+    @Property("${local-date-one}")
+    @PropertyDateTimeFormat("yyyy/dd/MM")
+    private LocalDate localDate1;
+    @Property("${local-date-two:2018/03/02}")
+    @PropertyDateTimeFormat("yyyy/dd/MM")
+    private LocalDate localDate2;
+    @Property("${local-date-three#null}")
+    @PropertyDateTimeFormat("yyyy/dd/MM")
+    private LocalDate localDate3;
+
+    @Property("${local-time-one}")
+    @PropertyDateTimeFormat("HH:mm:ss")
+    private LocalTime localTime1;
+    @Property("${local-time-two:01 02 03}")
+    @PropertyDateTimeFormat("HH mm ss")
+    private LocalTime localTime2;
+    @Property("${local-time-three:02-03-04}")
+    @PropertyDateTimeFormat("HH-mm-ss")
+    //TODO update with double dot
+    private LocalTime localTime3;
+    @Property("${local-time-four#null}")
+    @PropertyDateTimeFormat("$HH:mm:ss")
+    private LocalTime localTime4;
+
+    @Property("${local-date-time-one}")
+    @PropertyDateTimeFormat("dd/MM/yyyy HH:mm")
+    //TODO update witj double dot
+    private LocalDateTime localDateTime1;
+    @Property("${local-date-time-two:01/02/2007 01 03 07}")
+    @PropertyDateTimeFormat("dd/MM/yyyy HH mm ss")
+    private LocalDateTime localDateTime2;
+    @Property("${local-date-time-three#null}")
+    @PropertyDateTimeFormat("dd/MM/yyyy HH:ss")
+    private LocalDateTime localDateTime3;
+
     public String getStr1() {
         return str1;
     }
@@ -388,5 +466,61 @@ class DifferentProperties {
 
     public Boolean getBoolean6() {
         return boolean6;
+    }
+
+    public Date getDate1() {
+        return date1;
+    }
+
+    public Date getDate2() {
+        return date2;
+    }
+
+    public Date getDate3() {
+        return date3;
+    }
+
+    public Date getDate4() {
+        return date4;
+    }
+
+    public LocalDate getLocalDate1() {
+        return localDate1;
+    }
+
+    public LocalDate getLocalDate2() {
+        return localDate2;
+    }
+
+    public LocalDate getLocalDate3() {
+        return localDate3;
+    }
+
+    public LocalTime getLocalTime1() {
+        return localTime1;
+    }
+
+    public LocalTime getLocalTime2() {
+        return localTime2;
+    }
+
+    public LocalTime getLocalTime3() {
+        return localTime3;
+    }
+
+    public LocalTime getLocalTime4() {
+        return localTime4;
+    }
+
+    public LocalDateTime getLocalDateTime1() {
+        return localDateTime1;
+    }
+
+    public LocalDateTime getLocalDateTime2() {
+        return localDateTime2;
+    }
+
+    public LocalDateTime getLocalDateTime3() {
+        return localDateTime3;
     }
 }

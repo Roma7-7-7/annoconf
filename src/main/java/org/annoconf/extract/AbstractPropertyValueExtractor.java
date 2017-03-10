@@ -28,7 +28,7 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
         }
 
         if (!(fullPropertyName.startsWith("${") && fullPropertyName.endsWith("}"))) {
-            return convert(fullPropertyName);
+            return convert(fullPropertyName, fullPropertyName);
         }
 
         //Removing "${" and "}"
@@ -69,7 +69,7 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
         }
     }
 
-    protected abstract T convert(String value);
+    protected abstract T convert(String value) throws Exception;
 
     private void validateSeparators(String propertyName, long countOfDefValSeparators, long countOfDefNullSeparators) throws PropertyExtractException {
         if (countOfDefValSeparators > 1 || countOfDefNullSeparators > 1

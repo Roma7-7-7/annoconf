@@ -5,6 +5,7 @@ import org.annoconf.exceptions.AnnoConfException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -18,10 +19,12 @@ import static org.mockito.Mockito.when;
 public class PropertyValueExtractorTest {
 
     private Properties properties = new Properties();
-    private PropertyValueExtractor<String> extractor = PropertyValueExtractorFactory.getExtractor(String.class);
+    private PropertyValueExtractor<String> extractor;
 
     @Before
     public void before() {
+        final Field field = StringPropertyClass.class.getDeclaredFields()[0];
+        this.extractor = PropertyValueExtractorFactory.getExtractor(field);
         properties.setProperty("prop1", "value1");
         properties.setProperty("prop2", "value2");
         properties.setProperty("prop6", "value6");
@@ -114,6 +117,10 @@ public class PropertyValueExtractorTest {
         final Property result = mock(Property.class);
         when(result.value()).thenReturn(value);
         return result;
+    }
+
+    private static class StringPropertyClass {
+        private String property;
     }
 
 }
