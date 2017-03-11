@@ -116,7 +116,7 @@ public class PropertyValueExtractorFactory {
 
     }
 
-    private static abstract class AbstractDateTimeExtractor <T> extends AbstractPropertyValueExtractor<T> {
+    private abstract static class AbstractDateTimeExtractor<T> extends AbstractPropertyValueExtractor {
 
         protected PropertyDateTimeFormat format;
 
