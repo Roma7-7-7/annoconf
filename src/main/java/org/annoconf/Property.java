@@ -14,4 +14,8 @@ public @interface Property {
 
     String value();
 
+    String defaultValueSeparator() default ":";
+
+    boolean defaultNull() default false;
+
 }

@@ -27,4 +27,20 @@ public class StringUtilsTest {
         assertEquals(2, StringUtils.countOf("wf:2rcd:erg3", ':'));
     }
 
+    @Test
+    public void stringCount() {
+        assertEquals(0, StringUtils.countOf(null, "abv"));
+        assertEquals(0, StringUtils.countOf(null, null));
+        assertEquals(0, StringUtils.countOf(null, ""));
+        assertEquals(0, StringUtils.countOf("", null));
+        assertEquals(0, StringUtils.countOf("", ""));
+        assertEquals(4, StringUtils.countOf("        ", "  "));
+        assertEquals(0, StringUtils.countOf("", "abv"));
+        assertEquals(0, StringUtils.countOf("", ""));
+        assertEquals(0, StringUtils.countOf("abc", ":"));
+        assertEquals(1, StringUtils.countOf(":sdg::e#", "::"));
+        assertEquals(3, StringUtils.countOf(":sdg::e#", ":"));
+        assertEquals(4, StringUtils.countOf("wf:2abcrcd:abcabceraabccg3", "abc"));
+    }
+
 }
