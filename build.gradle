@@ -10,6 +10,8 @@ checkstyle {
     toolVersion = "7.4"
 }
 
+checkstyleTest.enabled = false
+
 repositories {
     mavenCentral()
 }
