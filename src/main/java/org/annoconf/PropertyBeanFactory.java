@@ -20,7 +20,8 @@ public class PropertyBeanFactory {
 
         final PropertySource annotation = ReflectionUtils.getAnnotation(clazz, PropertySource.class);
         if (annotation == null) {
-            throw new PropertyBeanBuildException(String.format("Class [%s] is not annotated org.annoconf.PropertySource annotation", clazz));
+            throw new PropertyBeanBuildException(
+                    String.format("Class [%s] is not annotated org.annoconf.PropertySource annotation", clazz));
         }
         if (StringUtils.isBlank(annotation.value())) {
             throw new PropertyBeanBuildException(String.format("PropertySource value of class [%s] is blank", clazz));
@@ -49,7 +50,10 @@ public class PropertyBeanFactory {
             final Object value = PropertyValueExtractorFactory.getExtractor(field).extract(properties, annotation);
             ReflectionUtils.setFieldValue(obj, field, value);
         } catch (AnnoConfException e) {
-            throw new PropertyBeanBuildException(String.format("Failed to build instance of property bean class [%s]. Cannot set field [%s]", obj.getClass().getName(), field.getName()), e);
+            throw new PropertyBeanBuildException(
+                    String.format(
+                            "Failed to build instance of property bean class [%s]. Cannot set field [%s]",
+                            obj.getClass().getName(), field.getName()), e);
         }
 
     }

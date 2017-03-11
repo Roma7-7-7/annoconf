@@ -26,7 +26,8 @@ public class ReflectionUtils {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (NoSuchMethodException e) {
-            throw new PropertyBeanBuildException(String.format("Property bean class [%s] must contain constructor without arguments", clazz), e);
+            throw new PropertyBeanBuildException(
+                    String.format("Property bean class [%s] must contain constructor without arguments", clazz), e);
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
             throw new PropertyBeanBuildException(String.format("Failed to build instance of bean [%s]", clazz), e);
         }
@@ -61,7 +62,9 @@ public class ReflectionUtils {
             field.set(obj, value);
             return obj;
         } catch (Exception e) {
-            throw new PropertyBeanBuildException(String.format("Failed to set instance value. Object class: [%s]; field: [%s]; value: [%s]", obj.getClass(), field, value));
+            throw new PropertyBeanBuildException(
+                    String.format(
+                            "Failed to set instance value. Object class: [%s]; field: [%s]; value: [%s]", obj.getClass(), field, value));
         }
     }
 

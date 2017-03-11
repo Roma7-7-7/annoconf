@@ -5,13 +5,10 @@ package org.annoconf.utils;
  */
 public class StringUtils {
 
-    private StringUtils() {};
+    private StringUtils() {}
 
     public static boolean isBlank(String str) {
-        if (str == null) {
-            return true;
-        }
-        return str.trim().length() == 0;
+        return str == null || str.trim().length() == 0;
     }
 
     public static long countOf(String str, char search) {
