@@ -337,9 +337,8 @@ class DifferentProperties {
     @Property("${local-time-two:01 02 03}")
     @PropertyDateTimeFormat("HH mm ss")
     private LocalTime localTime2;
-    @Property("${local-time-three:02-03-04}")
-    @PropertyDateTimeFormat("HH-mm-ss")
-    //TODO update with double dot
+    @Property(value = "${local-time-three#02:03-04}", defaultValueSeparator = "#")
+    @PropertyDateTimeFormat("HH:mm-ss")
     private LocalTime localTime3;
     @Property(value = "${local-time-four}", defaultNull = true)
     @PropertyDateTimeFormat("$HH:mm:ss")
@@ -347,10 +346,9 @@ class DifferentProperties {
 
     @Property("${local-date-time-one}")
     @PropertyDateTimeFormat("dd/MM/yyyy HH:mm")
-    //TODO update witj double dot
     private LocalDateTime localDateTime1;
-    @Property("${local-date-time-two:01/02/2007 01 03 07}")
-    @PropertyDateTimeFormat("dd/MM/yyyy HH mm ss")
+    @Property(value = "${local-date-time-two?01/02/2007 01-03^07}", defaultValueSeparator = "?")
+    @PropertyDateTimeFormat("dd/MM/yyyy HH-mm^ss")
     private LocalDateTime localDateTime2;
     @Property(value = "${local-date-time-three}", defaultNull = true)
     @PropertyDateTimeFormat("dd/MM/yyyy HH:ss")
