@@ -2,6 +2,7 @@ package org.annoconf.extract;
 
 import org.annoconf.Property;
 import org.annoconf.exceptions.AnnoConfException;
+import org.annoconf.exceptions.PropertyExtractException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,17 +74,20 @@ public class PropertyValueExtractorTest {
     public void extractWthInvalidPropertyName() {
         checkIsInvalid("${name:value:value2}");
         checkIsInvalid("${name::value}");
-        checkIsInvalid("${name:##value}");
-        checkIsInvalid("${name:#value1#value}");
-        checkIsInvalid("${name:#a}");
-        checkIsInvalid("${name:#value}");
-        checkIsInvalid("${name:#null}");
         checkIsInvalid("${}");
         checkIsInvalid("${:def}");
-        checkIsInvalid("${#wfef}");
-        checkIsInvalid("${#null}");
         checkIsInvalid("${:#null}");
         checkIsInvalid("${   }");
+    }
+
+    @Test
+    public void extractWithInvalidPropertyConfigurationMustThrowException() {
+        try {
+            this.extractor.extract(this.properties, mockAnnotation("${fake-prop:def}", true));
+            fail("PropertyExtractException must be thrown");
+        } catch (PropertyExtractException e) {
+            assertEquals("Invalid property name. Please look at org.annoconf.Property#value() javadoc. Property name [fake-prop:def]", e.getMessage());
+        }
     }
 
     @Test
@@ -91,14 +95,17 @@ public class PropertyValueExtractorTest {
         assertEquals("value1", this.extractor.extract(this.properties, mockAnnotation("${prop1}")));
         assertEquals("value2", this.extractor.extract(this.properties, mockAnnotation("${prop2}")));
         assertEquals("default3", this.extractor.extract(this.properties, mockAnnotation("${prop3:default3}")));
-        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${prop4#null}")));
-        assertEquals("value5", this.extractor.extract(this.properties, mockAnnotation("${prop5:value5}")));
+        assertEquals("default31", this.extractor.extract(this.properties, mockAnnotation("${prop3?default31}", "?")));
+        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${prop4}", true)));
+        assertEquals("value5", this.extractor.extract(this.properties, mockAnnotation("${prop5 value5}", " ")));
         assertEquals("value6", this.extractor.extract(this.properties, mockAnnotation("${prop6:default6}")));
-        assertEquals("value7", this.extractor.extract(this.properties, mockAnnotation("${prop7#null}")));
+        assertEquals("value7", this.extractor.extract(this.properties, mockAnnotation("${prop7}", true)));
         assertEquals("v", this.extractor.extract(this.properties, mockAnnotation("${p}")));
         assertEquals("d", this.extractor.extract(this.properties, mockAnnotation("${d:d}")));
-        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${n#null}")));
+        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${n}", true)));
         assertEquals("", this.extractor.extract(this.properties, mockAnnotation("${e:}")));
+        assertEquals("#null", this.extractor.extract(this.properties, mockAnnotation("${e:#null}")));
+        assertEquals("##null", this.extractor.extract(this.properties, mockAnnotation("${e:##null}")));
     }
 
     private void checkIsInvalid(String name) {
@@ -114,8 +121,22 @@ public class PropertyValueExtractorTest {
     }
 
     private Property mockAnnotation(String value) {
+        return mockAnnotation(value, ":");
+    }
+
+    private Property mockAnnotation(String value, boolean defaultNull) {
+        return mockAnnotation(value, ":", defaultNull);
+    }
+
+    private Property mockAnnotation(String value, String separator) {
+        return mockAnnotation(value, separator, false);
+    }
+
+    private Property mockAnnotation(String value, String separator, boolean defaultNull) {
         final Property result = mock(Property.class);
         when(result.value()).thenReturn(value);
+        when(result.defaultValueSeparator()).thenReturn(separator);
+        when(result.defaultNull()).thenReturn(defaultNull);
         return result;
     }
 

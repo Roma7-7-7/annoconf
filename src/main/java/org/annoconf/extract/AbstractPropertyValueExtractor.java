@@ -6,16 +6,12 @@ import org.annoconf.utils.StringUtils;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Created by roma on 3/9/17.
  */
 abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtractor {
-
-    static final char DEFAULT_VALUE_SEPARATOR = ':';
-    static final char DEFAULT_NULL_SEPARATOR = '#';
-    static final String DEFAULT_VALUE_SEPARATOR_STRING = ":";
-    static final String DEFAULT_NULL_SEPARATOR_STRING = "#";
 
     @Override
     public T extract(Properties properties, Property property) throws PropertyExtractException {
@@ -31,32 +27,34 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
             return convert(fullPropertyName, fullPropertyName);
         }
 
+        final String defaultValueSeparator = property.defaultValueSeparator();
+        final String quotedSeparator = Pattern.quote(defaultValueSeparator);
+
         //Removing "${" and "}"
         final String parsedPropertyName = fullPropertyName.substring(2, fullPropertyName.length() - 1);
-        final long countOfDefValSeparators = StringUtils.countOf(parsedPropertyName, DEFAULT_VALUE_SEPARATOR);
-        final long countOfDefNullSeparators = StringUtils.countOf(parsedPropertyName, DEFAULT_NULL_SEPARATOR);
+        final long countOfDefValSeparators = StringUtils.countOf(parsedPropertyName, defaultValueSeparator);
 
-        validateSeparators(parsedPropertyName, countOfDefValSeparators, countOfDefNullSeparators);
-        validateNotBlankName(parsedPropertyName);
+        if ((countOfDefValSeparators > 1)
+                || (countOfDefValSeparators == 1 && property.defaultNull())
+                || StringUtils.isBlank(parsedPropertyName.split(quotedSeparator)[0])) {
+            throw new PropertyExtractException(parsedPropertyName,
+                    "Invalid property name. Please look at org.annoconf.Property#value() javadoc");
+        }
 
-        final String propertyKey = parsedPropertyName
-                .split(DEFAULT_VALUE_SEPARATOR_STRING)[0]
-                .split(DEFAULT_NULL_SEPARATOR_STRING)[0];
-
+        final String propertyKey = parsedPropertyName.split(quotedSeparator)[0];
 
         if (properties.containsKey(propertyKey)) {
             return convert(propertyKey, properties.get(propertyKey));
         }
 
-        if (countOfDefValSeparators == 0 && countOfDefNullSeparators == 0) {
+        if (countOfDefValSeparators == 0) {
+            if (property.defaultNull()) {
+                return null;
+            }
             throw new PropertyExtractException(parsedPropertyName, "Property not found");
         }
 
-        if (countOfDefNullSeparators == 1) {
-            return null;
-        }
-
-        final String[] keyVal = parsedPropertyName.split(DEFAULT_VALUE_SEPARATOR_STRING);
+        final String[] keyVal = parsedPropertyName.split(quotedSeparator);
         //If split result returns 1 element it mean that we have property like "${key:}"
         return convert(keyVal[0], keyVal.length > 1 ? keyVal[1] : "");
     }
@@ -70,26 +68,5 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
     }
 
     protected abstract T convert(String value) throws Exception;
-
-    private void validateSeparators(String propertyName, long countOfDefValSeparators, long countOfDefNullSeparators)
-            throws PropertyExtractException {
-        if (countOfDefValSeparators > 1 || countOfDefNullSeparators > 1
-                || (countOfDefValSeparators > 0 && countOfDefNullSeparators > 0)
-                || (countOfDefNullSeparators == 1 && !propertyName.contains("#null"))) {
-            throwInvalidPropertyName(propertyName);
-        }
-    }
-
-    private void validateNotBlankName(String propertyName) throws PropertyExtractException {
-        if (StringUtils.isBlank(propertyName
-                .split(DEFAULT_VALUE_SEPARATOR_STRING)[0]
-                .split(DEFAULT_NULL_SEPARATOR_STRING)[0])) {
-            throwInvalidPropertyName(propertyName);
-        }
-    }
-
-    private void throwInvalidPropertyName(String propertyName) throws PropertyExtractException {
-        throw new PropertyExtractException(propertyName, "Invalid property name. Please look at org.annoconf.Property#value() javadoc");
-    }
 
 }

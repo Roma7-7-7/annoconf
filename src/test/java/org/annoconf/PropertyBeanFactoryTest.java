@@ -213,7 +213,7 @@ class ThreeStringProperties {
     private String prop3;
     @Property("${prop4:default-val}")
     private String prop4;
-    @Property("${prop5#null}")
+    @Property(value = "${prop5}", defaultNull = true)
     private String prop5;
     @Property("${prop6#null")
     private String prop6;
@@ -256,14 +256,14 @@ class DifferentProperties {
     private String str4;
     @Property("${str-five:str-value-5}")
     private String str5;
-    @Property("${str-six#null}")
+    @Property(value = "${str-six}", defaultNull = true)
     private String str6;
 
     @Property("${int-one}")
     private Integer int1;
     @Property("${int-two:2}")
     private Integer int2;
-    @Property("${int-three#null}")
+    @Property(value = "${int-three}", defaultNull = true)
     private Integer int3;
     @Property("${int-four:4}")
     private int int4;
@@ -272,7 +272,7 @@ class DifferentProperties {
     private Long long1;
     @Property("${long-two:2}")
     private Long long2;
-    @Property("${long-three#null}")
+    @Property(value = "${long-three}", defaultNull = true)
     private Long long3;
     @Property("${long-four:4}")
     private long long4;
@@ -281,7 +281,7 @@ class DifferentProperties {
     private Float float1;
     @Property("${float-two:2.2}")
     private Float float2;
-    @Property("${float-three#null}")
+    @Property(value = "${float-three}", defaultNull = true)
     private Float float3;
     @Property("${float-four:4.4}")
     private float float4;
@@ -290,7 +290,7 @@ class DifferentProperties {
     private Double double1;
     @Property("${double-two:22.22}")
     private Double double2;
-    @Property("${double-three#null}")
+    @Property(value = "${double-three}", defaultNull = true)
     private Double double3;
     @Property("${double-four:44.44}")
     private double double4;
@@ -305,7 +305,7 @@ class DifferentProperties {
     private Boolean boolean4;
     @Property("${boolean-five:false}")
     private boolean boolean5;
-    @Property("${boolean-six#null}")
+    @Property(value = "${boolean-six}", defaultNull = true)
     private Boolean boolean6;
 
     @Property("${date-one}")
@@ -317,7 +317,7 @@ class DifferentProperties {
     @Property("${date-three:2019/07/03}")
     @PropertyDateTimeFormat("yyyy/MM/dd")
     private Date date3;
-    @Property("${date-four#null}")
+    @Property(value = "${date-four}", defaultNull = true)
     @PropertyDateTimeFormat("yyyy/MM/dd")
     private Date date4;
 
@@ -327,7 +327,7 @@ class DifferentProperties {
     @Property("${local-date-two:2018/03/02}")
     @PropertyDateTimeFormat("yyyy/dd/MM")
     private LocalDate localDate2;
-    @Property("${local-date-three#null}")
+    @Property(value = "${local-date-three}", defaultNull = true)
     @PropertyDateTimeFormat("yyyy/dd/MM")
     private LocalDate localDate3;
 
@@ -341,7 +341,7 @@ class DifferentProperties {
     @PropertyDateTimeFormat("HH-mm-ss")
     //TODO update with double dot
     private LocalTime localTime3;
-    @Property("${local-time-four#null}")
+    @Property(value = "${local-time-four}", defaultNull = true)
     @PropertyDateTimeFormat("$HH:mm:ss")
     private LocalTime localTime4;
 
@@ -352,7 +352,7 @@ class DifferentProperties {
     @Property("${local-date-time-two:01/02/2007 01 03 07}")
     @PropertyDateTimeFormat("dd/MM/yyyy HH mm ss")
     private LocalDateTime localDateTime2;
-    @Property("${local-date-time-three#null}")
+    @Property(value = "${local-date-time-three}", defaultNull = true)
     @PropertyDateTimeFormat("dd/MM/yyyy HH:ss")
     private LocalDateTime localDateTime3;
 

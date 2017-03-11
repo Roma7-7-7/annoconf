@@ -11,14 +11,32 @@ public class StringUtils {
         return str == null || str.trim().length() == 0;
     }
 
+    public static long countOf(String str, String search) {
+        if (str == null || search == null || str.length() == 0) {
+            return 0;
+        }
+
+        int result = 0;
+        int i = 0;
+
+        do {
+            i = str.indexOf(search, i);
+
+            if (i != -1) {
+                result++;
+                i += search.length();
+            }
+        } while (i != -1);
+
+        return result;
+    }
+
     public static long countOf(String str, char search) {
         if (str == null) {
             return 0;
         }
 
-        return str.chars()
-                .filter(c -> c == search)
-                .count();
+        return countOf(str, String.valueOf(search));
     }
 
 }
