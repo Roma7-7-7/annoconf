@@ -46,9 +46,8 @@ public class PropertyBeanFactory {
 
     private static void setPropertyValue(Object obj, Field field, Properties properties) {
         try {
-            final Class<?> fieldType = field.getType();
             final Property annotation = ReflectionUtils.getAnnotation(field, Property.class);
-            final Object value = PropertyValueExtractorFactory.getExtractor(fieldType).extract(properties, annotation);
+            final Object value = PropertyValueExtractorFactory.getExtractor(field).extract(properties, annotation);
             ReflectionUtils.setFieldValue(obj, field, value);
         } catch (AnnoConfException e) {
             throw new PropertyBeanBuildException(

@@ -1,5 +1,15 @@
 package org.annoconf.extract;
 
+import org.annoconf.PropertyDateTimeFormat;
+import org.annoconf.utils.ReflectionUtils;
+
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -14,8 +24,10 @@ public class PropertyValueExtractorFactory {
     private static PropertyValueExtractor<Double> DOUBLE_EXTRACTOR = new DoubleExtractor();
     private static PropertyValueExtractor<Double> BOOLEAN_EXTRACTOR = new BooleanExtractor();
 
-    public static <T> PropertyValueExtractor<T> getExtractor(Class<T> clazz) {
-        Objects.requireNonNull(clazz);
+    public static <T> PropertyValueExtractor<T> getExtractor(Field field) {
+        Objects.requireNonNull(field);
+        final Class<T> clazz = (Class<T>) field.getType();
+        final PropertyDateTimeFormat format = ReflectionUtils.getAnnotation(field, PropertyDateTimeFormat.class);
 
         if (String.class == clazz) {
             return (PropertyValueExtractor<T>) STRING_EXTRACTOR;
@@ -34,6 +46,18 @@ public class PropertyValueExtractorFactory {
         }
         if (Boolean.class == clazz || boolean.class == clazz) {
             return (PropertyValueExtractor<T>) BOOLEAN_EXTRACTOR;
+        }
+        if (Date.class == clazz) {
+            return new DateExtractor(format);
+        }
+        if (LocalDate.class == clazz) {
+            return new LocalDateExtractor(format);
+        }
+        if (LocalTime.class == clazz) {
+            return new LocalTimeExtractor(format);
+        }
+        if (LocalDateTime.class == clazz) {
+            return new LocalDateTimeExtractor(format);
         }
 
         throw new IllegalArgumentException(String.format("Property class [%s] is not supported", clazz.getName()));
@@ -88,6 +112,71 @@ public class PropertyValueExtractorFactory {
         @Override
         protected Boolean convert(String value) {
             return Boolean.valueOf(value);
+        }
+
+    }
+
+    private static abstract class AbstractDateTimeExtractor <T> extends AbstractPropertyValueExtractor<T> {
+
+        protected PropertyDateTimeFormat format;
+
+        protected AbstractDateTimeExtractor(PropertyDateTimeFormat format) {
+            this.format = format;
+        }
+
+        @Override
+        protected abstract T convert(String value) throws Exception;
+
+    }
+
+    private static class DateExtractor extends AbstractDateTimeExtractor<Date> {
+
+        public DateExtractor(PropertyDateTimeFormat format) {
+            super(format);
+        }
+
+        @Override
+        protected Date convert(String value) throws Exception {
+            return new SimpleDateFormat(this.format.value()).parse(value);
+        }
+
+    }
+
+    private static class LocalDateExtractor extends AbstractDateTimeExtractor<LocalDate> {
+
+        protected LocalDateExtractor(PropertyDateTimeFormat format) {
+            super(format);
+        }
+
+        @Override
+        protected LocalDate convert(String value) throws Exception {
+            return LocalDate.parse(value, DateTimeFormatter.ofPattern(this.format.value()));
+        }
+
+    }
+
+    private static class LocalTimeExtractor extends AbstractDateTimeExtractor<LocalTime> {
+
+        protected LocalTimeExtractor(PropertyDateTimeFormat format) {
+            super(format);
+        }
+
+        @Override
+        protected LocalTime convert(String value) throws Exception {
+            return LocalTime.parse(value, DateTimeFormatter.ofPattern(this.format.value()));
+        }
+
+    }
+
+    private static class LocalDateTimeExtractor extends AbstractDateTimeExtractor<LocalDateTime> {
+
+        protected LocalDateTimeExtractor(PropertyDateTimeFormat format) {
+            super(format);
+        }
+
+        @Override
+        protected LocalDateTime convert(String value) throws Exception {
+            return LocalDateTime.parse(value, DateTimeFormatter.ofPattern(this.format.value()));
         }
 
     }
