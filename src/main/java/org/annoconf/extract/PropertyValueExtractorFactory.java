@@ -39,7 +39,7 @@ public class PropertyValueExtractorFactory {
         throw new IllegalArgumentException(String.format("Property class [%s] is not supported", clazz.getName()));
     }
 
-    private static class StringExtractor extends AbstractPropertyValueExtractor<String>{
+    private static class StringExtractor extends AbstractPropertyValueExtractor<String> {
 
         @Override
         protected String convert(String value) {
@@ -47,7 +47,7 @@ public class PropertyValueExtractorFactory {
         }
     }
 
-    private static class IntegerExtractor extends AbstractPropertyValueExtractor<Integer>{
+    private static class IntegerExtractor extends AbstractPropertyValueExtractor<Integer> {
 
         @Override
         protected Integer convert(String value) {
@@ -56,7 +56,7 @@ public class PropertyValueExtractorFactory {
 
     }
 
-    private static class LongExtractor extends AbstractPropertyValueExtractor<Long>{
+    private static class LongExtractor extends AbstractPropertyValueExtractor<Long> {
 
         @Override
         protected Long convert(String value) {
@@ -65,7 +65,7 @@ public class PropertyValueExtractorFactory {
 
     }
 
-    private static class FloatExtractor extends AbstractPropertyValueExtractor<Float>{
+    private static class FloatExtractor extends AbstractPropertyValueExtractor<Float> {
 
         @Override
         protected Float convert(String value) {
@@ -74,7 +74,7 @@ public class PropertyValueExtractorFactory {
 
     }
 
-    private static class DoubleExtractor extends AbstractPropertyValueExtractor<Double>{
+    private static class DoubleExtractor extends AbstractPropertyValueExtractor<Double> {
 
         @Override
         protected Double convert(String value) {
@@ -83,7 +83,7 @@ public class PropertyValueExtractorFactory {
 
     }
 
-    private static class BooleanExtractor extends AbstractPropertyValueExtractor<Boolean>{
+    private static class BooleanExtractor extends AbstractPropertyValueExtractor<Boolean> {
 
         @Override
         protected Boolean convert(String value) {

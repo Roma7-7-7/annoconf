@@ -71,7 +71,8 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
 
     protected abstract T convert(String value);
 
-    private void validateSeparators(String propertyName, long countOfDefValSeparators, long countOfDefNullSeparators) throws PropertyExtractException {
+    private void validateSeparators(String propertyName, long countOfDefValSeparators, long countOfDefNullSeparators)
+            throws PropertyExtractException {
         if (countOfDefValSeparators > 1 || countOfDefNullSeparators > 1
                 || (countOfDefValSeparators > 0 && countOfDefNullSeparators > 0)
                 || (countOfDefNullSeparators == 1 && !propertyName.contains("#null"))) {

@@ -50,7 +50,9 @@ public class PropertiesProvider {
     private static void close(InputStream stream) {
         try {
             stream.close();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            //Ignore
+        }
     }
 
 }
