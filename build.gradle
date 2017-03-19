@@ -1,16 +1,9 @@
 group 'annoconf'
-version '0.1'
+version '0.2'
 
 apply plugin: 'java'
-apply plugin: 'checkstyle'
 
 sourceCompatibility = 1.8
-
-checkstyle {
-    toolVersion = "7.4"
-}
-
-checkstyleTest.enabled = false
 
 repositories {
     mavenCentral()

@@ -3,6 +3,10 @@ package org.annoconf;
 import org.annoconf.exceptions.AnnoConfException;
 import org.annoconf.exceptions.PropertiesLoadException;
 import org.annoconf.extract.PropertyValueExtractorFactory;
+import org.annoconf.source.BasicPropertiesSource;
+import org.annoconf.source.CompositePropertySource;
+import org.annoconf.source.EnvironmentPropertSource;
+import org.annoconf.source.SystemPropertySource;
 import org.annoconf.utils.ReflectionUtils;
 import org.annoconf.utils.StringUtils;
 
@@ -28,10 +32,13 @@ public class PropertyBeanFactory {
         }
 
         final T result = ReflectionUtils.newInstance(clazz);
-        final Properties properties = loadProperties(annotation.value(), clazz);
+        final CompositePropertySource source = new CompositePropertySource(
+                new BasicPropertiesSource(loadProperties(annotation.value(), clazz)),
+                new SystemPropertySource(),
+                new EnvironmentPropertSource());
 
         ReflectionUtils.getPropertyFields(clazz)
-                .forEach(f -> setPropertyValue(result, f, properties));
+                .forEach(f -> setPropertyValue(result, f, source));
 
         return result;
     }
@@ -44,10 +51,10 @@ public class PropertyBeanFactory {
         }
     }
 
-    private static void setPropertyValue(Object obj, Field field, Properties properties) {
+    private static void setPropertyValue(Object obj, Field field, PropertyValueSource source) {
         try {
             final Property annotation = ReflectionUtils.getAnnotation(field, Property.class);
-            final Object value = PropertyValueExtractorFactory.getExtractor(field).extract(properties, annotation);
+            final Object value = PropertyValueExtractorFactory.getExtractor(field).extract(source, annotation);
             ReflectionUtils.setFieldValue(obj, field, value);
         } catch (AnnoConfException e) {
             throw new PropertyBeanBuildException(
