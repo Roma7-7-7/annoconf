@@ -1,11 +1,11 @@
 package org.annoconf.extract;
 
 import org.annoconf.Property;
+import org.annoconf.PropertyValueSource;
 import org.annoconf.exceptions.PropertyExtractException;
 import org.annoconf.utils.StringUtils;
 
 import java.util.Objects;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 /**
@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
 abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtractor {
 
     @Override
-    public T extract(Properties properties, Property property) throws PropertyExtractException {
-        Objects.requireNonNull(properties);
+    public T extract(PropertyValueSource source, Property property) throws PropertyExtractException {
+        Objects.requireNonNull(source);
         Objects.requireNonNull(property);
 
         final String fullPropertyName = property.value();
@@ -43,8 +43,8 @@ abstract class AbstractPropertyValueExtractor<T> implements PropertyValueExtract
 
         final String propertyKey = parsedPropertyName.split(quotedSeparator)[0];
 
-        if (properties.containsKey(propertyKey)) {
-            return convert(propertyKey, properties.get(propertyKey));
+        if (source.hasValue(propertyKey)) {
+            return convert(propertyKey, source.getValue(propertyKey));
         }
 
         if (countOfDefValSeparators == 0) {

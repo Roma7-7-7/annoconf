@@ -3,11 +3,11 @@ package org.annoconf.extract;
 import org.annoconf.Property;
 import org.annoconf.exceptions.AnnoConfException;
 import org.annoconf.exceptions.PropertyExtractException;
+import org.annoconf.stub.PropertyValueSourceStub;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -19,18 +19,18 @@ import static org.mockito.Mockito.when;
  */
 public class PropertyValueExtractorTest {
 
-    private Properties properties = new Properties();
+    private PropertyValueSourceStub source = new PropertyValueSourceStub();
     private PropertyValueExtractor<String> extractor;
 
     @Before
     public void before() {
         final Field field = StringPropertyClass.class.getDeclaredFields()[0];
         this.extractor = PropertyValueExtractorFactory.getExtractor(field);
-        properties.setProperty("prop1", "value1");
-        properties.setProperty("prop2", "value2");
-        properties.setProperty("prop6", "value6");
-        properties.setProperty("prop7", "value7");
-        properties.setProperty("p", "v");
+        source.setProperty("prop1", "value1");
+        source.setProperty("prop2", "value2");
+        source.setProperty("prop6", "value6");
+        source.setProperty("prop7", "value7");
+        source.setProperty("p", "v");
     }
 
     @Test(expected = NullPointerException.class)
@@ -40,13 +40,13 @@ public class PropertyValueExtractorTest {
 
     @Test(expected = NullPointerException.class)
     public void extractNullAnnotation() throws AnnoConfException {
-        this.extractor.extract(new Properties(), null);
+        this.extractor.extract(new PropertyValueSourceStub(), null);
     }
 
     @Test
     public void extractWithBlankAnnotationValue() {
         try {
-            this.extractor.extract(this.properties, mockAnnotation("  "));
+            this.extractor.extract(this.source, mockAnnotation("  "));
             fail("AnnoConfException must be thrown");
         } catch (AnnoConfException e) {
             assertEquals("Property name cannot be blank. Property name [  ]", e.getMessage());
@@ -55,15 +55,15 @@ public class PropertyValueExtractorTest {
 
     @Test
     public void extractWithNonDefinedPropertyName() throws AnnoConfException {
-        assertEquals("prop-name", this.extractor.extract(this.properties, mockAnnotation("prop-name")));
-        assertEquals("${prop-name", this.extractor.extract(this.properties, mockAnnotation("${prop-name")));
-        assertEquals("prop-name}", this.extractor.extract(this.properties, mockAnnotation("prop-name}")));
+        assertEquals("prop-name", this.extractor.extract(this.source, mockAnnotation("prop-name")));
+        assertEquals("${prop-name", this.extractor.extract(this.source, mockAnnotation("${prop-name")));
+        assertEquals("prop-name}", this.extractor.extract(this.source, mockAnnotation("prop-name}")));
     }
 
     @Test
     public void extractWithNotFoundPropertyValue() {
         try {
-            this.extractor.extract(this.properties, mockAnnotation("${non-defined-property}"));
+            this.extractor.extract(this.source, mockAnnotation("${non-defined-property}"));
             fail("AnnoConfException must be thrown");
         } catch (AnnoConfException e) {
             assertEquals("Property not found. Property name [non-defined-property]", e.getMessage());
@@ -83,7 +83,7 @@ public class PropertyValueExtractorTest {
     @Test
     public void extractWithInvalidPropertyConfigurationMustThrowException() {
         try {
-            this.extractor.extract(this.properties, mockAnnotation("${fake-prop:def}", true));
+            this.extractor.extract(this.source, mockAnnotation("${fake-prop:def}", true));
             fail("PropertyExtractException must be thrown");
         } catch (PropertyExtractException e) {
             assertEquals("Invalid property name. Please look at org.annoconf.Property#value() javadoc. Property name [fake-prop:def]", e.getMessage());
@@ -92,25 +92,25 @@ public class PropertyValueExtractorTest {
 
     @Test
     public void extract() throws AnnoConfException {
-        assertEquals("value1", this.extractor.extract(this.properties, mockAnnotation("${prop1}")));
-        assertEquals("value2", this.extractor.extract(this.properties, mockAnnotation("${prop2}")));
-        assertEquals("default3", this.extractor.extract(this.properties, mockAnnotation("${prop3:default3}")));
-        assertEquals("default31", this.extractor.extract(this.properties, mockAnnotation("${prop3?default31}", "?")));
-        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${prop4}", true)));
-        assertEquals("value5", this.extractor.extract(this.properties, mockAnnotation("${prop5 value5}", " ")));
-        assertEquals("value6", this.extractor.extract(this.properties, mockAnnotation("${prop6:default6}")));
-        assertEquals("value7", this.extractor.extract(this.properties, mockAnnotation("${prop7}", true)));
-        assertEquals("v", this.extractor.extract(this.properties, mockAnnotation("${p}")));
-        assertEquals("d", this.extractor.extract(this.properties, mockAnnotation("${d:d}")));
-        assertEquals(null, this.extractor.extract(this.properties, mockAnnotation("${n}", true)));
-        assertEquals("", this.extractor.extract(this.properties, mockAnnotation("${e:}")));
-        assertEquals("#null", this.extractor.extract(this.properties, mockAnnotation("${e:#null}")));
-        assertEquals("##null", this.extractor.extract(this.properties, mockAnnotation("${e:##null}")));
+        assertEquals("value1", this.extractor.extract(this.source, mockAnnotation("${prop1}")));
+        assertEquals("value2", this.extractor.extract(this.source, mockAnnotation("${prop2}")));
+        assertEquals("default3", this.extractor.extract(this.source, mockAnnotation("${prop3:default3}")));
+        assertEquals("default31", this.extractor.extract(this.source, mockAnnotation("${prop3?default31}", "?")));
+        assertEquals(null, this.extractor.extract(this.source, mockAnnotation("${prop4}", true)));
+        assertEquals("value5", this.extractor.extract(this.source, mockAnnotation("${prop5 value5}", " ")));
+        assertEquals("value6", this.extractor.extract(this.source, mockAnnotation("${prop6:default6}")));
+        assertEquals("value7", this.extractor.extract(this.source, mockAnnotation("${prop7}", true)));
+        assertEquals("v", this.extractor.extract(this.source, mockAnnotation("${p}")));
+        assertEquals("d", this.extractor.extract(this.source, mockAnnotation("${d:d}")));
+        assertEquals(null, this.extractor.extract(this.source, mockAnnotation("${n}", true)));
+        assertEquals("", this.extractor.extract(this.source, mockAnnotation("${e:}")));
+        assertEquals("#null", this.extractor.extract(this.source, mockAnnotation("${e:#null}")));
+        assertEquals("##null", this.extractor.extract(this.source, mockAnnotation("${e:##null}")));
     }
 
     private void checkIsInvalid(String name) {
         try {
-            this.extractor.extract(this.properties, mockAnnotation(name));
+            this.extractor.extract(this.source, mockAnnotation(name));
             fail("AnnoConfException must be thrown");
         } catch (AnnoConfException e) {
             if (name.startsWith("${") && name.endsWith("}")) {
